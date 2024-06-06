@@ -1,0 +1,55 @@
+body {
+	background: #fdf6e3;
+	color: #586e75;
+}
+
+div {
+	/*background: #002b36;*/
+}
+
+label {
+	color: #2aa198;
+}
+
+label:hover {
+	color: #268bd2;
+}
+
+hr {
+	border-color: #93a1a1;
+}
+
+
+/*inputs*/
+
+button, input, textarea {
+	color: #2aa198;
+	background: #fdf6e3;
+	border-color: #2aa198;
+	border-style: solid;
+}
+
+button:focus, input:focus {
+	outline-color: #268bd2;
+	color: #268bd2;
+	border-color: #268bd2;
+}
+
+button:hover, input:hover {
+	border-color: #268bd2;
+	color: #268bd2;
+}
+
+input[type="text"]:focus {
+	color: #b58900;
+}
+
+input[type="number"]:focus {
+	color: #d33682;
+}
+
+button:disabled {
+	color: #93a1a1;
+	border-color: #93a1a1;
+}
+
