@@ -2,99 +2,118 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-	<!-- <link rel="icon" href="favicon.ico"> -->
-	<link rel="stylesheet" href="css/normalize.css">
-	<link rel="stylesheet" href="css/solarized.css">
-	<link rel="stylesheet" href="css/style.css">
-
-	<script src="js/global_snippet.js" defer></script>
-	<script src="js/vue.js" defer></script>
-	<script src="js/data.js" defer></script>
-	<script src="js/translit_map.js" defer></script>
-	<script src="js/main.js" defer></script>
 	<title>Open coder</title>
+	<link rel="stylesheet" href="style.css">
+	<!-- <script type="text/javascript" src="test_data.js" defer="true"></script> -->
+	<script type="module" src="main.js"></script>
 </head>
 <body>
+	<header>
+		<h1>
+			<a href="/">▢</a>
+			<a href="">Open coder</a>
+		</h1>
+	</header>
 
-	<div class="vue">
+	<div id="app">
 
-		<textarea cols="30" rows="10" v-model="raw_input"></textarea>
-		<textarea cols="30" rows="10" v-model="dic_template"></textarea>
-		<button @click="read_data">Read</button>
-		<button @click="read_dic">Read dic</button>
-		<button @click="gen_dic">Generate dictinary</button>
-		<button @click="copy_to_clipboard">Copy to clipboard</button>
-		<textarea cols="30" rows="10" v-model="raw_output"></textarea>
+		<data-reader v-if="text_list.length == 0" @read-data="handleReadData"></data-reader>
+		<div v-if="text_list.length > 0">
+			<div class="upper_area">
+				<div class="l1_block">
+					<h3>Stats</h3>
+					<table>
+						<tr>
+							<td>Total:</td>
+							<td class="al_right">{{ done_cnt }} / {{ text_list.length }}</td>
+							<td class="al_right">({{ done_pct }}%)</td>
+						</tr>
+						<tr>
+							<td>Unique:</td>
+							<td class="al_right">{{ wl_done_cnt }} / {{ work_list.length }}</td>
+							<td class="al_right">({{ wl_done_pct }}%)</td>
+						</tr>
+					</table>
+				</div>
 
-		<br>
-		<div v-if="text_list.length > 0">TRS% <input type="number" v-model="autorec_trs" style="width: 3em;"> ({{ (autorec_trs / text_list.length * 100).toFixed(1) }} %) </div>
-		<br>
-		<span>Count: {{ text_list.length }}, done: {{ done_cnt }} ({{ done_pct }}%)</span>
-		<br>
-		<span>Unique entries: {{ work_list.length }}, done: {{ wl_done_cnt }} ({{ wl_done_pct }}%)</span>
-		<br>
-		<br>
-		<div>
-			Autofill TRS% <input type="number" v-model="autofill_trs" style="width: 3em;">%
-			<button @click="autofill_entry" :disabled="dic_index === null">Autofill entry</button>
-			<button @click="autofill_all">Autofill all</button>
-			<button @click="clear_selection">Clear selection</button>
-		</div>
-		<br>
-		<br>
+				<div class="l1_block">
+					<h3>Actions</h3>
+					<div class="actions">
+						<button v-if="mode != 'move_to'" @click="auto_add_all">Auto fill codebook</button>
+						<button v-if="mode == 'codebook'" :class="{ green_glow: !is_auto_add_disabled}" :disabled="is_auto_add_disabled" @click="auto_add">Auto fill diff ≤ 1</button>
+					</div>
+				</div>
 
-		<div style="display: inline-block;">
-			<table>
-				<thead>
-					<tr>
-						<th @click="order_work_list_string">String</th>
-						<th @click="order_work_list">Count</th>
-						<th>Similarity</th>
-						<th>Actions</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr v-for="(item, index) in work_list" :key="index" v-if="item.dic_value === undefined">
-						<td style="max-width: 500px;">{{ item.string }}</td>
-						<td>{{ item.count }}</td>
-						<td>{{ item.similarity }}%</td>
-						<td>
-							<button @click="confirm(index)">✔️</button>
-							<button @click="add_to_dic(index)">➕</button>
-							<button @click="similar_to_this(index)">🔎</button>
-						</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
+				<exporter class="l1_block" :text_list="text_list" :work_list="work_list" :codebook="codebook"></exporter>
+			</div>
 
-		<div style="display: inline-block; vertical-align: top;">
-			<table>
-				<thead>
-					<tr>
-						<th @click="order_dic_list">Code</th>
-						<th>Display name</th>
-						<th>Count</th>
-						<th>Action</th>
-						<th>Words</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr v-for="(item, index) in dic" :key="index" :style="{border: index === dic_index ? '2px solid #d33682' : ''}">
-						<td><input type="number" v-model="item.code" style="width: 3em;"></td>
-						<td><input type="text" v-model="item.display_name"></td>
-						<td>{{ item.count }}</td>
-						<td>
-							<button v-if="selected_entry !== null" @click="add_here(index)">Add here</button>
-							<button v-if="selected_entry === null" @click="work_with(index)">Work with</button>
-							<button @click="remove_key(index)">❌</button>
-						</td>
-						<td style="max-width: 500px;">
-							<span class="delete_word" v-for="(word, windex) in item.words" :key="windex" @click="delete_word(index, windex)">{{ word }}</span>
-						</td>
-					</tr>
-				</tbody>
-			</table>
+			<div class="tables">
+				<div class="l1_block">
+					<table>
+						<thead>
+							<tr>
+								<th class="clickable" @click="order_work_list_string">String</th>
+								<th class="clickable" @click="order_work_list">Count</th>
+								<th>
+									Diff
+								</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							<template v-for="(item, index) in work_list" :key="item.string">
+								<tr v-if="item.codebook_gid === undefined"
+									:class="{ orange_outline: ((mode == 'work_list' || mode == 'move_to') && item.string == selected_entry), green_outline: (mode == 'codebook' && item.difference <= 1)}">
+									<td class="clickable string" @click="similar_to_this(index)" :title="item.string">{{ item.string }}</td>
+									<td class="al_right">{{ item.count }}</td>
+									<td class="al_right">{{ item.difference }}</td>
+									<td>
+										<button :style="{ visibility: mode == 'codebook' ? 'visible' : 'hidden' }" @click="confirm(index)" title="Add this entry to the current codebook entry">✔️</button>
+										<button @click="similar_to_this(index)" title="Search for the similar entries">🔎</button>
+										<button @click="move_to(item.string)" title="Add to the existing codebook entry">➡️</button>
+										<button @click="add_to_codebook(item.string)" title="Add this entry as a new codebook entry">➕</button>
+									</td>
+								</tr>
+							</template>
+						</tbody>
+					</table>
+				</div>
+				<div class="l1_block">
+					<table>
+						<thead>
+							<tr>
+								<th>Code</th>
+								<th>Display name</th>
+								<th>Count</th>
+								<th>Action</th>
+								<th>Words</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr v-for="(item, index) in codebook" :key="index" :style="(mode == 'codebook' && index == codebook_index) ? 'box-shadow: 0 0 2px 2px springgreen;' : ''">
+								<td><input type="number" v-model="item.code" style="width: 3em;"></td>
+								<td><input type="text" class="al_right" v-model="item.display_name"></td>
+								<td class="al_right">{{ item.count }}</td>
+								<td class="actions">
+									<button class="green_glow" v-if="mode == 'move_to'" @click="add_here(index)">Add here</button>
+									<button v-if="mode != 'move_to'" @click="similar_to_codebook(index)" title="Search similar entries">🔎</button>
+									<button v-if="mode != 'move_to'" @click="remove_key(index)" title="Remove codebook entry">❌</button>
+								</td>
+								<td class="words">
+									<span class="delete_word" v-for="(word, windex) in item.words" :key="windex" @click="delete_word(index, windex)" title="Remove word">{{ word }}</span>
+								</td>
+							</tr>
+							<tr v-if="mode == 'move_to'">
+								<td></td>
+								<td></td>
+								<td></td>
+								<td><button v-if="mode == 'move_to'" class="red_glow" @click="cancel_adding">Cancel</button></td>
+								<td></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
 		</div>
 
 	</div>
