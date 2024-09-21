@@ -90,7 +90,7 @@ const app_config = {
 			this.mode = "work_list"
 			this.selected_entry = this.work_list[index].string;
 			this.work_list = this.work_list.map(a => {
-				const difference = Math.min(calc_distance(a.string, this.work_list[index].string), calc_distance(a.translit, this.work_list[index].string));
+				const difference = Math.min(calc_distance(a.string, this.work_list[index].string), calc_distance(a.translit, this.work_list[index].string) + 1);
 				return {...a, difference};
 			}).toSorted((a, b) => a.difference - b.difference);
 		},

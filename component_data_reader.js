@@ -1,7 +1,7 @@
 // component_data_reader.js
 import { translit_map } from "./translit_map.js";
 
-const normalize = xs => xs.toLowerCase().replace(/[^\p{L}\p{N}\-()]/gu, " ").replace(/\s+/g, " ").trim();
+const normalize = xs => xs.toLowerCase().replace(/[^\p{L}\p{N}\-()&]/gu, " ").replace(/\s+/g, " ").trim();
 const transliterate = string => string.split("").map(a => translit_map.get(a) ?? a).join("");
 
 export const component_data_reader = {
