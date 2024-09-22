@@ -1,4 +1,5 @@
 :root {
+/*	charcoal*/
 	--primary_50: #f4f5f6;
 	--primary_100: #ced2d4;
 	--primary_200: #a8afb3;
@@ -10,6 +11,7 @@
 	--primary_800: #151b1f;
 	--primary_900: #0a0d0f;
 
+/*	soft white*/
 	--bg_50: #fefefe;
 	--bg_100: #fbfbfa;
 	--bg_200: #f9f8f7;
@@ -21,6 +23,7 @@
 	--bg_800: #60605f;
 	--bg_900: #302f2f;
 
+/*	indigo dye*/
 	--secondary_50: #f2f6f8;
 	--secondary_100: #c4d4de;
 	--secondary_200: #96b2c4;
@@ -31,8 +34,6 @@
 	--secondary_700: #072e48;
 	--secondary_800: #051e30;
 	--secondary_900: #020f17;
-
-	--tertiary_500: #848283;
 }
 
 *, *:before, *:after {
@@ -253,7 +254,7 @@ header {
 			}
 
 			& .clickable:hover {
-				text-shadow: 0 0 1px var(--tertiary_500);
+				text-shadow: 0 0 1px var(--bg_700);
 			}
 
 			& .orange_outline {
