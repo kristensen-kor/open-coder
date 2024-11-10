@@ -242,10 +242,21 @@ header {
 			}
 
 			& .string {
+				color: var(--primary_700);
+				cursor: default;
+
 				max-width: 20rem;
 				white-space: nowrap;
 				overflow: hidden;
 				text-overflow: ellipsis;
+
+				&:hover {
+					text-shadow: 0 0 1px darkorange;
+				}
+
+				&.green_shadow:hover {
+					text-shadow: 0 0 1px springgreen;
+				}
 			}
 
 			& .clickable {

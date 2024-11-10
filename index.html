@@ -39,7 +39,7 @@
 				<div class="l1_block">
 					<h3>Actions</h3>
 					<div class="actions">
-						<button v-if="mode != 'move_to'" @click="auto_add_all">Auto fill codebook</button>
+						<button :style="{ visibility: mode != 'move_to' ? 'visible' : 'hidden' }" @click="auto_add_all">Auto fill codebook</button>
 						<button v-if="mode == 'codebook'" :class="{ green_glow: !is_auto_add_disabled}" :disabled="is_auto_add_disabled" @click="auto_add">Auto fill diff ≤ 1</button>
 					</div>
 				</div>
@@ -57,21 +57,21 @@
 								<th>
 									Diff
 								</th>
-								<th>Actions</th>
+								<th>Search</th>
 							</tr>
 						</thead>
 						<tbody>
 							<template v-for="(item, index) in work_list" :key="item.string">
 								<tr v-if="item.codebook_gid === undefined"
 									:class="{ orange_outline: ((mode == 'work_list' || mode == 'move_to') && item.string == selected_entry), green_outline: (mode == 'codebook' && item.difference <= 1)}">
-									<td class="clickable string" @click="similar_to_this(index)" :title="item.string">{{ item.string }}</td>
+									<td class="string" :class="{ green_shadow: mode == 'codebook'}" @click="string_action(index)" :title="item.string">{{ item.string }}</td>
 									<td class="al_right">{{ item.count }}</td>
 									<td class="al_right">{{ item.difference }}</td>
 									<td>
-										<button :style="{ visibility: mode == 'codebook' ? 'visible' : 'hidden' }" @click="confirm(index)" title="Add this entry to the current codebook entry">✔️</button>
+										<!-- <button :style="{ visibility: mode == 'codebook' ? 'visible' : 'hidden' }" @click="confirm(index)" title="Add this entry to the current codebook entry">✔️</button> -->
 										<button @click="similar_to_this(index)" title="Search for the similar entries">🔎</button>
-										<button @click="move_to(item.string)" title="Add to the existing codebook entry">➡️</button>
-										<button @click="add_to_codebook(item.string)" title="Add this entry as a new codebook entry">➕</button>
+										<!-- <button @click="move_to(item.string)" title="Add to the existing codebook entry">➡️</button> -->
+										<!-- <button @click="add_to_codebook(item.string)" title="Add this entry as a new codebook entry">➕</button> -->
 									</td>
 								</tr>
 							</template>
@@ -107,7 +107,14 @@
 								<td></td>
 								<td></td>
 								<td></td>
-								<td><button v-if="mode == 'move_to'" class="red_glow" @click="cancel_adding">Cancel</button></td>
+								<td><button class="green_glow" @click="new_codebook_entry">New entry</button></td>
+								<td></td>
+							</tr>
+							<tr v-if="mode == 'move_to' || mode == 'codebook'">
+								<td></td>
+								<td></td>
+								<td></td>
+								<td><button class="red_glow" @click="reset_mode">Cancel</button></td>
 								<td></td>
 							</tr>
 						</tbody>

@@ -86,6 +86,13 @@ const app_config = {
 				}).toSorted((a, b) => a.difference - b.difference);
 			}
 		},
+		string_action: function(index) {
+			if (this.mode == "codebook") {
+				this.confirm(index);
+			} else {
+				this.move_to(this.work_list[index].string)
+			}
+		},
 		similar_to_this: function(index) {
 			this.mode = "work_list"
 			this.selected_entry = this.work_list[index].string;
@@ -105,7 +112,7 @@ const app_config = {
 			this.mode = "move_to";
 			this.selected_entry = string;
 		},
-		cancel_adding: function() {
+		reset_mode: function() {
 			this.mode = "work_list";
 		},
 		add_here: function(index) {
@@ -139,11 +146,11 @@ const app_config = {
 			this.clear_mode();
 			this.order_work_list();
 		},
-		add_to_codebook: function(string) {
+		new_codebook_entry: function() {
 			const gid = Math.max(...this.codebook.map(a => a.gid)) + 1;
 			const code = Math.max(...this.codebook.map(a => a.code)) + 1;
-			this.codebook.push({display_name: string, string: string, gid: gid, words: [], count: 0, code: code});
-			this.move_to(string);
+			this.codebook.push({display_name: this.selected_entry, string: this.selected_entry, gid: gid, words: [], count: 0, code: code});
+			this.move_to(this.selected_entry);
 			this.add_here(this.codebook.length - 1);
 			this.similar_to_codebook(this.codebook.length - 1);
 		},
